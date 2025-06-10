@@ -7,6 +7,7 @@ import { EditorOutlineViewer } from '@affine/core/blocksuite/outline-viewer';
 import { AffineErrorBoundary } from '@affine/core/components/affine/affine-error-boundary';
 // import { PageAIOnboarding } from '@affine/core/components/affine/ai-onboarding';
 import { GlobalPageHistoryModal } from '@affine/core/components/affine/page-history-modal';
+import { CommentSidebar } from '@affine/core/components/comment/sidebar';
 import { useGuard } from '@affine/core/components/guard';
 import { useAppSettingHelper } from '@affine/core/components/hooks/affine/use-app-setting-helper';
 import { useEnableAI } from '@affine/core/components/hooks/affine/use-enable-ai';
@@ -37,6 +38,8 @@ import { DisposableGroup } from '@blocksuite/affine/global/disposable';
 import { RefNodeSlotsProvider } from '@blocksuite/affine/inlines/reference';
 import {
   AiIcon,
+  CommentDuodoneIcon,
+  CommentIcon,
   ExportIcon,
   FrameIcon,
   PropertyIcon,
@@ -377,6 +380,10 @@ const DetailPageImpl = memo(function DetailPageImpl() {
           </Scrollable.Root>
         </ViewSidebarTab>
       )}
+
+      <ViewSidebarTab tabId="comment" icon={<CommentIcon />}>
+        <CommentSidebar />
+      </ViewSidebarTab>
 
       <GlobalPageHistoryModal />
       {/* FIXME: wait for better ai, <PageAIOnboarding /> */}

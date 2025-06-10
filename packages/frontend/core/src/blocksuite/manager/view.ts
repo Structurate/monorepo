@@ -29,13 +29,25 @@ import type {
   PeekOptions,
   PeekViewService as BSPeekViewService,
 } from '@blocksuite/affine/components/peek';
-import { ViewExtensionManager } from '@blocksuite/affine/ext-loader';
+import {
+  type ViewExtensionContext,
+  ViewExtensionManager,
+  ViewExtensionProvider,
+} from '@blocksuite/affine/ext-loader';
 import { getInternalViewExtensions } from '@blocksuite/affine/extensions/view';
 import { FoundationViewExtension } from '@blocksuite/affine/foundation/view';
 import { AffineCanvasTextFonts } from '@blocksuite/affine/shared/services';
 import { LinkedDocViewExtension } from '@blocksuite/affine/widgets/linked-doc/view';
 import type { FrameworkProvider } from '@toeverything/infra';
 import type { TemplateResult } from 'lit';
+
+class FakeCommentViewExtension extends ViewExtensionProvider {
+  override name = 'affine-fake-comment-view-extension';
+
+  override setup(_context: ViewExtensionContext) {
+    // todo
+  }
+}
 
 type Configure = {
   init: () => Configure;
@@ -56,6 +68,7 @@ type Configure = {
   electron: (framework?: FrameworkProvider) => Configure;
   linkPreview: (framework?: FrameworkProvider) => Configure;
   codeBlockHtmlPreview: (framework?: FrameworkProvider) => Configure;
+  comment: (framework?: FrameworkProvider) => Configure;
 
   value: ViewExtensionManager;
 };
@@ -116,6 +129,7 @@ class ViewProvider {
       electron: this._configureElectron,
       linkPreview: this._configureLinkPreview,
       codeBlockHtmlPreview: this._configureCodeBlockHtmlPreview,
+      comment: this._configureComment,
       value: this._manager,
     };
   }
@@ -321,6 +335,11 @@ class ViewProvider {
     framework?: FrameworkProvider
   ) => {
     this._manager.configure(CodeBlockPreviewViewExtension, { framework });
+    return this.config;
+  };
+
+  private readonly _configureComment = (framework?: FrameworkProvider) => {
+    this._manager.configure(FakeCommentViewExtension, { framework });
     return this.config;
   };
 }

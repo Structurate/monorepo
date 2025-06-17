@@ -3,6 +3,7 @@ import '../content/rich-text';
 
 import type { FeatureFlagService } from '@affine/core/modules/feature-flag';
 import { WithDisposable } from '@blocksuite/affine/global/lit';
+import { unsafeCSSVarV2 } from '@blocksuite/affine/shared/theme';
 import { isInsidePageEditor } from '@blocksuite/affine/shared/utils';
 import type { EditorHost } from '@blocksuite/affine/std';
 import { ShadowlessElement } from '@blocksuite/affine/std';
@@ -18,6 +19,7 @@ import {
   type ChatMessage,
   type ChatStatus,
   isChatMessage,
+  type StreamObject,
 } from '../../components/ai-chat-messages';
 import { AIChatErrorRenderer } from '../../messages/error';
 import { type AIError } from '../../provider';
@@ -28,6 +30,20 @@ export class ChatMessageAssistant extends WithDisposable(ShadowlessElement) {
       color: var(--affine-placeholder-color);
       font-size: var(--affine-font-xs);
       font-weight: 400;
+    }
+
+    .reasoning-wrapper {
+      padding: 16px 20px;
+      margin: 8px 0;
+      border-radius: 8px;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .tool-calling-wrapper {
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 0.5px solid ${unsafeCSSVarV2('layer/insideBorder/border')};
     }
   `;
 
@@ -78,33 +94,69 @@ export class ChatMessageAssistant extends WithDisposable(ShadowlessElement) {
 
   renderContent() {
     const { host, item, isLast, status, error } = this;
-
-    const state = isLast
-      ? status !== 'loading' && status !== 'transmitting'
-        ? 'finished'
-        : 'generating'
-      : 'finished';
     const shouldRenderError = isLast && status === 'error' && !!error;
 
     return html`
-      ${item.attachments
-        ? html`<chat-content-images
-            .images=${item.attachments}
-          ></chat-content-images>`
-        : nothing}
-      <chat-content-rich-text
-        .host=${host}
-        .text=${item.content}
-        .state=${state}
-        .extensions=${this.extensions}
-        .affineFeatureFlagService=${this.affineFeatureFlagService}
-      ></chat-content-rich-text>
+      ${this.renderImages()}
+      ${item.streamObjects?.length
+        ? this.renderStreamObjects(item.streamObjects)
+        : this.renderRichText(item.content)}
       ${shouldRenderError ? AIChatErrorRenderer(host, error) : nothing}
       ${this.renderEditorActions()}
     `;
   }
 
-  renderEditorActions() {
+  private renderImages() {
+    const { item } = this;
+    if (!item.attachments) return nothing;
+
+    return html`<chat-content-images
+      .images=${item.attachments}
+    ></chat-content-images>`;
+  }
+
+  private renderStreamObjects(streamObjects: StreamObject[]) {
+    return html`<div>
+      ${streamObjects.map(streamObject => {
+        switch (streamObject.type) {
+          case 'text-delta':
+            return this.renderRichText(streamObject.textDelta);
+          case 'reasoning':
+            return html`
+              <div class="reasoning-wrapper">
+                ${this.renderRichText(streamObject.textDelta)}
+              </div>
+            `;
+          case 'tool-call':
+          case 'tool-result':
+            return html`
+              <div class="tool-calling-wrapper">Tool Calling...</div>
+            `;
+          default:
+            return nothing;
+        }
+      })}
+    </div>`;
+  }
+
+  private renderRichText(text: string) {
+    const { host, isLast, status } = this;
+    const state = isLast
+      ? status !== 'loading' && status !== 'transmitting'
+        ? 'finished'
+        : 'generating'
+      : 'finished';
+
+    return html`<chat-content-rich-text
+      .host=${host}
+      .text=${text}
+      .state=${state}
+      .extensions=${this.extensions}
+      .affineFeatureFlagService=${this.affineFeatureFlagService}
+    ></chat-content-rich-text>`;
+  }
+
+  private renderEditorActions() {
     const { item, isLast, status } = this;
 
     if (!isChatMessage(item) || item.role !== 'assistant') return nothing;

@@ -102,6 +102,12 @@ export interface SearchNodeWithMeta extends SearchNode {
   };
 }
 
+export interface SearchDocResult {
+  docId: string;
+  title: string;
+  summary: string;
+}
+
 @Injectable()
 export class IndexerService {
   private readonly logger = new Logger(IndexerService.name);
@@ -431,6 +437,119 @@ export class IndexerService {
       }
     }
     return blobNameMap;
+  }
+
+  async searchDocsByDocIds(
+    workspaceId: string,
+    docIds: string[]
+  ): Promise<SearchDocResult[]> {
+    const result = await this.search({
+      table: SearchTable.doc,
+      query: {
+        type: SearchQueryType.boolean,
+        occur: SearchQueryOccur.must,
+        queries: [
+          {
+            type: SearchQueryType.match,
+            field: 'workspaceId',
+            match: workspaceId,
+          },
+          {
+            type: SearchQueryType.boolean,
+            occur: SearchQueryOccur.should,
+            queries: docIds.map(docId => ({
+              type: SearchQueryType.match,
+              field: 'docId',
+              match: docId,
+            })),
+          },
+        ],
+      },
+      options: {
+        fields: ['docId', 'title', 'summary'],
+        pagination: {
+          limit: docIds.length,
+        },
+      },
+    });
+
+    // keep order by docIds
+    const docIdMap = new Map<string, SearchDocResult>();
+    for (const node of result.nodes) {
+      docIdMap.set(node.fields.docId[0] as string, {
+        docId: node.fields.docId[0] as string,
+        title: node.fields.title[0] as string,
+        summary: node.fields.summary[0] as string,
+      });
+    }
+    return docIds
+      .map(docId => docIdMap.get(docId))
+      .filter(Boolean) as SearchDocResult[];
+  }
+
+  async searchDocsByKeyword(
+    workspaceId: string,
+    keyword: string
+  ): Promise<SearchDocResult[]> {
+    const result = await this.aggregate({
+      table: SearchTable.block,
+      field: 'docId',
+      query: {
+        type: SearchQueryType.boolean,
+        occur: SearchQueryOccur.must,
+        queries: [
+          {
+            type: SearchQueryType.match,
+            field: 'workspaceId',
+            match: workspaceId,
+          },
+          {
+            type: SearchQueryType.boolean,
+            occur: SearchQueryOccur.must,
+            queries: [
+              {
+                type: SearchQueryType.match,
+                field: 'content',
+                match: keyword,
+              },
+              {
+                type: SearchQueryType.boolean,
+                occur: SearchQueryOccur.should,
+                queries: [
+                  {
+                    type: SearchQueryType.match,
+                    field: 'content',
+                    match: keyword,
+                  },
+                  {
+                    type: SearchQueryType.boost,
+                    boost: 1.5,
+                    query: {
+                      type: SearchQueryType.match,
+                      field: 'flavour',
+                      match: 'affine:page',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      options: {
+        hits: {
+          fields: ['docId', 'flavour'],
+          pagination: {
+            limit: 1,
+          },
+        },
+        pagination: {
+          limit: 20,
+        },
+      },
+    });
+    const docIds = result.buckets.map(bucket => bucket.key);
+    return await this.searchDocsByDocIds(workspaceId, docIds);
   }
 
   #formatSearchNodes(nodes: SearchNode[]) {

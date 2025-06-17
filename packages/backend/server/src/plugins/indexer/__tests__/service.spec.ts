@@ -2213,3 +2213,139 @@ test('should search blob names work', async t => {
 });
 
 // #endregion
+
+// #region searchDocsByDocIds()
+
+test('should search docs by doc ids work', async t => {
+  const workspaceId = randomUUID();
+  const docId1 = 'doc1';
+  const docId2 = 'doc2';
+  const docId3 = 'doc3';
+
+  await indexerService.write(
+    SearchTable.doc,
+    [
+      {
+        workspaceId,
+        docId: docId1,
+        title: 'hello world',
+        summary: 'this is a test',
+        createdByUserId: user.id,
+        updatedByUserId: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        workspaceId,
+        docId: docId2,
+        title: 'hello world 2',
+        summary: 'this is a test 2',
+        createdByUserId: user.id,
+        updatedByUserId: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    {
+      refresh: true,
+    }
+  );
+
+  const result = await indexerService.searchDocsByDocIds(workspaceId, [
+    docId1,
+    docId2,
+    docId3,
+  ]);
+
+  t.is(result.length, 2);
+  t.snapshot(result);
+});
+
+// #endregion
+
+// #region searchDocsByKeyword()
+
+test('should search docs by keyword work', async t => {
+  const workspaceId = randomUUID();
+  const docId1 = 'doc1';
+  const docId2 = 'doc2';
+  const docId3 = 'doc3';
+
+  await indexerService.write(
+    SearchTable.doc,
+    [
+      {
+        workspaceId,
+        docId: docId1,
+        title: 'hello world',
+        summary: 'this is a test',
+        createdByUserId: user.id,
+        updatedByUserId: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        workspaceId,
+        docId: docId2,
+        title: 'hello world 2',
+        summary: 'this is a test 2',
+        createdByUserId: user.id,
+        updatedByUserId: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    {
+      refresh: true,
+    }
+  );
+
+  await indexerService.write(
+    SearchTable.block,
+    [
+      {
+        workspaceId,
+        docId: docId1,
+        blockId: 'block1',
+        content: 'hello world',
+        flavour: 'affine:page',
+        createdByUserId: user.id,
+        updatedByUserId: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        workspaceId,
+        docId: docId2,
+        blockId: 'block2',
+        content: 'hello world 2',
+        flavour: 'affine:text',
+        createdByUserId: user.id,
+        updatedByUserId: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        workspaceId,
+        docId: docId3,
+        blockId: 'block3',
+        content: 'hello world 3',
+        flavour: 'affine:text',
+        createdByUserId: user.id,
+        updatedByUserId: user.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    {
+      refresh: true,
+    }
+  );
+
+  const result = await indexerService.searchDocsByKeyword(workspaceId, 'hello');
+
+  t.is(result.length, 2);
+  t.snapshot(result);
+});
+
+// #endregion

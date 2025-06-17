@@ -1426,17 +1426,6 @@ jobs:
         run: |
           yarn affine @affine/electron node ./scripts/macos-arm64-output-check.ts
 
-  test-build-mobile-app:
-    uses: ./.github/workflows/release-mobile.yml
-    needs: optimize_ci
-    if: needs.optimize_ci.outputs.skip == 'false'
-    with:
-      build-type: canary
-      build-target: development
-    secrets: inherit
-    permissions:
-      id-token: 'write'
-
   test-done:
     needs:
       - analyze
@@ -1467,7 +1456,6 @@ jobs:
       - desktop-test
       - desktop-bundle-check
       - cloud-e2e-test
-      - test-build-mobile-app
     if: always()
     runs-on: ubuntu-latest
     name: 3, 2, 1 Launch

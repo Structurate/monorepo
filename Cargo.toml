@@ -28,18 +28,18 @@ base64-simd            = "0.8"
 bitvec                 = "1.0"
 block2                 = "0.6"
 byteorder              = "1.5"
-cpal                   = "0.15"
+cpal                   = "0.16"
 chrono                 = "0.4"
 clap                   = { version = "4.4", features = ["derive"] }
 core-foundation        = "0.10"
-coreaudio-rs           = "0.12"
-criterion              = { version = "0.5", features = ["html_reports"] }
+coreaudio-rs           = "0.13"
+criterion              = { version = "0.6", features = ["html_reports"] }
 criterion2             = { version = "3", default-features = false }
 crossbeam-channel      = "0.5"
 dispatch2              = "0.3"
 docx-parser            = { git = "https://github.com/toeverything/docx-parser" }
 dotenvy                = "0.15"
-file-format            = { version = "0.26", features = ["reader"] }
+file-format            = { version = "0.27", features = ["reader"] }
 homedir                = "0.3"
 infer                  = { version = "0.19.0" }
 lasso                  = { version = "0.7", features = ["multi-threaded"] }
@@ -63,7 +63,7 @@ path-ext               = "0.1.2"
 pdf-extract            = { git = "https://github.com/toeverything/pdf-extract", branch = "darksky/improve-font-decoding" }
 phf                    = { version = "0.11", features = ["macros"] }
 proptest               = "1.3"
-proptest-derive        = "0.5"
+proptest-derive        = "0.6"
 rand                   = "0.9"
 rand_chacha            = "0.9"
 rand_distr             = "0.5"
@@ -93,7 +93,7 @@ tree-sitter-javascript = { version = "0.23" }
 tree-sitter-kotlin-ng  = { version = "1.1" }
 tree-sitter-python     = { version = "0.23" }
 tree-sitter-rust       = { version = "0.24" }
-tree-sitter-scala      = { version = "0.23" }
+tree-sitter-scala      = { version = "0.24" }
 tree-sitter-typescript = { version = "0.23" }
 uniffi                 = "0.29"
 url                    = { version = "2.5" }

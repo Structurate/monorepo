@@ -21,7 +21,8 @@ export type Language =
   | 'uk'
   | 'ko'
   | 'pt-BR'
-  | 'fa';
+  | 'fa'
+  | 'pl';
 
 export type LanguageResource = typeof en;
 export const SUPPORTED_LANGUAGES: Record<
@@ -160,5 +161,11 @@ export const SUPPORTED_LANGUAGES: Record<
     originalName: 'українська',
     flagEmoji: '🇺🇦',
     resource: () => import('./uk.json'),
+  },
+  pl: {
+    name: 'Polish',
+    originalName: 'polski',
+    flagEmoji: '🇵🇱',
+    resource: () => import('./pl.json'),
   },
 };

@@ -1026,6 +1026,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@affine/structurate@workspace:packages/frontend/apps/structurate":
+  version: 0.0.0-use.local
+  resolution: "@affine/structurate@workspace:packages/frontend/apps/structurate"
+  dependencies:
+    "@affine/component": "workspace:*"
+    "@affine/core": "workspace:*"
+    "@affine/env": "workspace:*"
+    "@affine/i18n": "workspace:*"
+    "@affine/nbstore": "workspace:*"
+    "@affine/track": "workspace:*"
+    "@emotion/react": "npm:^11.14.0"
+    "@sentry/react": "npm:^9.2.0"
+    "@toeverything/infra": "workspace:*"
+    "@types/react": "npm:^19.0.1"
+    "@types/react-dom": "npm:^19.0.2"
+    cross-env: "npm:^7.0.3"
+    react: "npm:^19.0.0"
+    react-dom: "npm:^19.0.0"
+    react-router-dom: "npm:^6.28.0"
+    typescript: "npm:^5.7.2"
+  languageName: unknown
+  linkType: soft
+
 "@affine/templates@workspace:*, @affine/templates@workspace:packages/frontend/templates":
   version: 0.0.0-use.local
   resolution: "@affine/templates@workspace:packages/frontend/templates"

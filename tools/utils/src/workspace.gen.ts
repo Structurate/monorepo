@@ -1292,6 +1292,19 @@ export const PackageList = [
     ],
   },
   {
+    location: 'packages/frontend/apps/structurate',
+    name: '@affine/structurate',
+    workspaceDependencies: [
+      'packages/frontend/component',
+      'packages/frontend/core',
+      'packages/common/env',
+      'packages/frontend/i18n',
+      'packages/common/nbstore',
+      'packages/frontend/track',
+      'packages/common/infra',
+    ],
+  },
+  {
     location: 'packages/frontend/apps/web',
     name: '@affine/web',
     workspaceDependencies: [
@@ -1554,6 +1567,7 @@ export type PackageName =
   | '@affine/electron-renderer'
   | '@affine/ios'
   | '@affine/mobile'
+  | '@affine/structurate'
   | '@affine/web'
   | '@affine/component'
   | '@affine/core'

@@ -45,6 +45,7 @@ function getBundleConfigs(pkg: Package) {
       return [createHTMLTargetConfig(pkg, pkg.srcPath.join('index.tsx').value)];
     }
     case '@affine/web':
+    case '@affine/structurate':
     case '@affine/mobile':
     case '@affine/ios':
     case '@affine/android': {
